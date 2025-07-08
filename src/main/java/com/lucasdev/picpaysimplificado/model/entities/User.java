@@ -1,6 +1,6 @@
 package com.lucasdev.picpaysimplificado.model.entities;
 
-import com.lucasdev.picpaysimplificado.model.UserType;
+import com.lucasdev.picpaysimplificado.model.enums.UserType;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotNull;
@@ -11,6 +11,7 @@ import lombok.Setter;
 import org.hibernate.validator.constraints.br.CPF;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.Objects;
 
 @Getter
@@ -34,14 +35,16 @@ public class User implements Serializable {
     private String lastName;
 
     @CPF(message = "Cpf with invalid format.")
-    @Column(nullable = false)
+    @Column(nullable = false, unique = true)
     private String cpf;
 
     @Email(message = "Email with invalid format")
-    @Column(nullable = false)
+    @Column(nullable = false, unique = true)
     private String email;
 
     private String password;
+
+    private BigDecimal balance;
 
     @NotNull(message = "The field 'userType' cannot be null.")
     private UserType userType;
@@ -56,5 +59,10 @@ public class User implements Serializable {
     @Override
     public int hashCode() {
         return Objects.hash(id, cpf);
+    }
+
+    @PrePersist
+    protected void onCreate() {
+        this.balance = new BigDecimal(0); //all users will start with balance zero
     }
 }
