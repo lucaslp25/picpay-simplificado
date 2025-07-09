@@ -2,6 +2,7 @@ package com.lucasdev.picpaysimplificado.services;
 
 import com.lucasdev.picpaysimplificado.exceptions.BankBadRequestException;
 import com.lucasdev.picpaysimplificado.exceptions.BankNotificationException;
+import com.lucasdev.picpaysimplificado.exceptions.ResourceNotFoundException;
 import com.lucasdev.picpaysimplificado.model.DTO.TransactionResponseDTO;
 import com.lucasdev.picpaysimplificado.model.DTO.TransactionTransferDTO;
 import com.lucasdev.picpaysimplificado.model.entities.Transaction;
@@ -9,6 +10,9 @@ import com.lucasdev.picpaysimplificado.model.entities.User;
 import com.lucasdev.picpaysimplificado.repositories.TransactionRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class TransactionService {
@@ -58,6 +62,20 @@ public class TransactionService {
         }
 
         return new TransactionResponseDTO(transaction);
+    }
+
+    public TransactionResponseDTO findById(Long id) {
+
+        Transaction entity = transactionRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Cannot find a transaction with id: " + id));
+
+        return new TransactionResponseDTO(entity);
+    }
+
+    public List<TransactionResponseDTO> findAll() {
+
+        List<Transaction> entities = transactionRepository.findAll();
+
+        return entities.stream().map(TransactionResponseDTO::new).collect(Collectors.toList());
     }
 
 }

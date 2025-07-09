@@ -4,6 +4,8 @@ import com.lucasdev.picpaysimplificado.model.DTO.UserCreateDTO;
 import com.lucasdev.picpaysimplificado.model.DTO.UserResponseDTO;
 import com.lucasdev.picpaysimplificado.model.DTO.UserUpdateDTO;
 import com.lucasdev.picpaysimplificado.services.UserService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -26,6 +28,10 @@ public class UserController {
      * findAll
      * @return a list of all users.
      */
+    @Operation(summary = "List all users in the system.", responses = {
+            @ApiResponse(responseCode = "200", description = "List return successfully"),
+            @ApiResponse(responseCode = "500", description = "Internal server error")
+    })
     @GetMapping
     public ResponseEntity<List<UserResponseDTO>> findAll(){
 
@@ -34,6 +40,12 @@ public class UserController {
     }
 
 
+    @Operation(summary = "Find a user by ID", responses = {
+
+            @ApiResponse(responseCode = "200", description = "User returned successfully"),
+            @ApiResponse(responseCode = "404", description = "User not found"),
+            @ApiResponse(responseCode = "500", description = "Internal server error")
+    })
     @GetMapping(value = "/{id}")
     public ResponseEntity<UserResponseDTO> findById(@PathVariable Long id){
 
@@ -41,6 +53,12 @@ public class UserController {
         return ResponseEntity.ok().body(user); //code 200
     }
 
+    @Operation(summary = "Find a user by CPF", responses = {
+            @ApiResponse(responseCode = "200", description = "User returned successfully"),
+            @ApiResponse(responseCode = "400", description = "Bad request in parameters"),
+            @ApiResponse(responseCode = "404", description = "User not found"),
+            @ApiResponse(responseCode = "500", description = "Internal server error")
+    })
     @GetMapping(value = "cpf/{cpf}")
     public ResponseEntity<UserResponseDTO> findByCpf(@PathVariable String cpf){
 
@@ -48,6 +66,12 @@ public class UserController {
         return ResponseEntity.ok().body(user); //code 200
     }
 
+    @Operation(summary = "Insert a new user in the system", responses = {
+            @ApiResponse(responseCode = "201", description = "User created and inserted successfully"),
+            @ApiResponse(responseCode = "400", description = "Bad request in parameters"),
+            @ApiResponse(responseCode = "409", description = "Conflict with user inserted"),
+            @ApiResponse(responseCode = "500", description = "Internal server error")
+    })
     @PostMapping
     public ResponseEntity<UserResponseDTO> insert(@Valid @RequestBody UserCreateDTO dtoRef){
 
@@ -58,6 +82,13 @@ public class UserController {
         return ResponseEntity.created(uri).body(user); //code 201
     }
 
+    @Operation(summary = "Update existent user in the system", responses = {
+            @ApiResponse(responseCode = "200", description = "User updated successfully"),
+            @ApiResponse(responseCode = "400", description = "Bad request in parameters"),
+            @ApiResponse(responseCode = "404", description = "User not found"),
+            @ApiResponse(responseCode = "409", description = "Conflict with user update"),
+            @ApiResponse(responseCode = "500", description = "Internal server error")
+    })
     //is patch because make only a bit of changes in entity...
     @PatchMapping(value = "/{id}")
     public ResponseEntity<UserResponseDTO> update(@PathVariable Long id, @Valid @RequestBody UserUpdateDTO dtoRef){
@@ -66,6 +97,12 @@ public class UserController {
         return ResponseEntity.ok().body(user); //code 200
     }
 
+    @Operation(summary = "Delete existent user in the system", responses = {
+            @ApiResponse(responseCode = "204", description = "User deleted successfully"),
+            @ApiResponse(responseCode = "404", description = "User not found"),
+            @ApiResponse(responseCode = "409", description = "Conflict in delete user"),
+            @ApiResponse(responseCode = "500", description = "Internal server error")
+    })
     @DeleteMapping(value = "/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id){
 

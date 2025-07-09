@@ -20,6 +20,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.math.BigDecimal;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -260,5 +261,30 @@ class TransactionServiceTest {
         verify(userService, times(1)).validateTransaction(sender1, amount);
         verify(emailNotifyService, never()).emailNotify(anyString(), anyString());
         verify(transactionRepository, never()).save(any(Transaction.class));
+    }
+
+    @Test
+    void findById_shouldReturnCorrectTransaction_whenIdExists(){
+
+        when(transactionRepository.findById(id)).thenReturn(Optional.of(t1));
+
+        TransactionResponseDTO result = service.findById(id);
+
+        Assertions.assertNotNull(result);
+
+        verify(transactionRepository, times(1)).findById(id);
+    }
+
+    @Test
+    void findById_shouldReturnMyException_whenIdDoesNotExist(){
+
+        when(transactionRepository.findById(fake_id)).thenReturn(Optional.empty());
+
+        ResourceNotFoundException ex = Assertions.assertThrows(ResourceNotFoundException.class, () -> service.findById(fake_id));
+
+        Assertions.assertNotNull(ex);
+        Assertions.assertEquals("Cannot find a transaction with id: "+ fake_id, ex.getMessage());
+
+        verify(transactionRepository, times(1)).findById(fake_id);
     }
 }
