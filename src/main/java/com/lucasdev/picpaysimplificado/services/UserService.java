@@ -1,7 +1,6 @@
 package com.lucasdev.picpaysimplificado.services;
 
 import com.lucasdev.picpaysimplificado.exceptions.BankBadRequestException;
-import com.lucasdev.picpaysimplificado.exceptions.BankException;
 import com.lucasdev.picpaysimplificado.exceptions.BankIntegrityException;
 import com.lucasdev.picpaysimplificado.exceptions.ResourceNotFoundException;
 import com.lucasdev.picpaysimplificado.model.DTO.UserCreateDTO;
@@ -136,6 +135,22 @@ public class UserService {
         entity.setEmail(dtoRef.email());
         entity.setPassword(dtoRef.password());
         entity.setUserType(dtoRef.type());
+    }
+
+    @Transactional
+    public UserResponseDTO deposit(Long id, BigDecimal amount){
+
+        User entity = userRepository.findById(id).
+                orElseThrow(() -> new ResourceNotFoundException("Not found user with id: " + id));
+
+        if (amount.compareTo(BigDecimal.ZERO) <= 0) {
+            throw new BankBadRequestException("The amount must be greater than zero");
+        }
+
+        entity.setBalance(entity.getBalance().add(amount)); //add the amount in the balance
+
+        //i´m using transactional, then don´t need save in rep, because the transactional do this for me.
+        return new UserResponseDTO(entity);
     }
 
 }

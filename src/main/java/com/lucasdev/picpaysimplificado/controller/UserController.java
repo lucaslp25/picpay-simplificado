@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import java.math.BigDecimal;
 import java.net.URI;
 import java.util.List;
 
@@ -108,5 +109,21 @@ public class UserController {
 
         userService.delete(id);
         return ResponseEntity.noContent().build(); //code 204
+    }
+
+    @Operation(summary = "Deposit a value for existing user", responses = {
+            @ApiResponse(responseCode = "201", description = "Created successfully"),
+            @ApiResponse(responseCode = "400", description = "Bad reqeust parameters"),
+            @ApiResponse(responseCode = "404", description = "User not found"),
+            @ApiResponse(responseCode = "500", description = "Internal server error")
+    })
+    @PostMapping(value = "/{id}/deposit")
+    public ResponseEntity<UserResponseDTO> deposit(@PathVariable Long id, @RequestBody BigDecimal amount){
+
+        UserResponseDTO result = userService.deposit(id, amount);
+
+        URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(result).toUri();
+
+        return ResponseEntity.created(uri).body(result);
     }
 }

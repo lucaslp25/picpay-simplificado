@@ -45,7 +45,7 @@ public class User implements Serializable {
 
     private String password;
 
-    private BigDecimal balance;
+    private BigDecimal balance = BigDecimal.ZERO;
 
     @NotNull(message = "The field 'userType' cannot be null.")
     private UserType userType;
