@@ -1,6 +1,5 @@
 package com.lucasdev.picpaysimplificado.model.DTO;
 
-import com.lucasdev.picpaysimplificado.model.entities.Data;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -10,9 +9,9 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class AuthorizationResponseDTO{
+public class NotificationDTO{
 
-    private String status;
-    private Data data;
-
+    private String email;
+    private String subject;
+    private String message;
 }

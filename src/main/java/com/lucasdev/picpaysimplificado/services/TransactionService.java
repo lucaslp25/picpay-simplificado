@@ -15,10 +15,13 @@ public class TransactionService {
 
     private final TransactionRepository transactionRepository;
 
+    private final EmailNotifyService emailNotifyService;
 
-    public TransactionService(UserService userService, TransactionRepository transactionRepository) {
+
+    public TransactionService(UserService userService, TransactionRepository transactionRepository, EmailNotifyService emailNotifyService) {
         this.userService = userService;
         this.transactionRepository = transactionRepository;
+        this.emailNotifyService = emailNotifyService;
     }
 
     @Transactional
@@ -41,6 +44,8 @@ public class TransactionService {
         //update the balances
         senderEntity.setBalance(senderEntity.getBalance().subtract(dtoRef.amount()));
         receiverEntity.setBalance(receiverEntity.getBalance().add(dtoRef.amount()));
+
+        emailNotifyService.emailNotify(senderEntity.getEmail(), "Transaction transfer successfully");
 
         return new TransactionResponseDTO(transaction);
     }

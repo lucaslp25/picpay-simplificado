@@ -30,7 +30,7 @@ public class TransactionController {
         URI uri = ServletUriComponentsBuilder
                 .fromCurrentRequest()
                 .path("/{id}")
-                .buildAndExpand(result)
+                .buildAndExpand(result.id())
                 .toUri();
 
         return ResponseEntity.created(uri).body(result); //return code 201
