@@ -2,6 +2,7 @@ package com.lucasdev.picpaysimplificado.services;
 
 import com.lucasdev.picpaysimplificado.exceptions.BankBadRequestException;
 import com.lucasdev.picpaysimplificado.exceptions.BankException;
+import com.lucasdev.picpaysimplificado.exceptions.BankIntegrityException;
 import com.lucasdev.picpaysimplificado.exceptions.ResourceNotFoundException;
 import com.lucasdev.picpaysimplificado.model.DTO.UserCreateDTO;
 import com.lucasdev.picpaysimplificado.model.DTO.UserResponseDTO;
@@ -86,6 +87,14 @@ public class UserService {
 
     @Transactional
     public UserResponseDTO insert(UserCreateDTO dtoRef){
+
+        if (userRepository.existsByCpf(dtoRef.cpf())){
+            throw new BankIntegrityException("Cpf already exists");
+        }
+
+        if (userRepository.existsByEmail(dtoRef.email())){
+            throw new BankIntegrityException("Email already exists");
+        }
 
         User entity = new User();
 

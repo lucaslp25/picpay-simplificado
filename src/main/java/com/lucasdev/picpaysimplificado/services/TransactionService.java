@@ -1,6 +1,7 @@
 package com.lucasdev.picpaysimplificado.services;
 
 import com.lucasdev.picpaysimplificado.exceptions.BankBadRequestException;
+import com.lucasdev.picpaysimplificado.exceptions.BankNotificationException;
 import com.lucasdev.picpaysimplificado.model.DTO.TransactionResponseDTO;
 import com.lucasdev.picpaysimplificado.model.DTO.TransactionTransferDTO;
 import com.lucasdev.picpaysimplificado.model.entities.Transaction;
@@ -50,7 +51,11 @@ public class TransactionService {
         senderEntity.setBalance(senderEntity.getBalance().subtract(dtoRef.amount()));
         receiverEntity.setBalance(receiverEntity.getBalance().add(dtoRef.amount()));
 
-        emailNotifyService.emailNotify(senderEntity.getEmail(), "Transaction transfer successfully");
+        try {
+            emailNotifyService.emailNotify(senderEntity.getEmail(), "Transaction transfer successfully");
+        }catch (BankNotificationException e){
+            System.out.println("Error notifying email");
+        }
 
         return new TransactionResponseDTO(transaction);
     }

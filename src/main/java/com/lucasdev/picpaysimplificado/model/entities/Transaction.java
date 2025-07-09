@@ -41,6 +41,12 @@ public class Transaction implements Serializable {
     @JoinColumn(name = "receiver_id")
     private User receiver;
 
+    public Transaction(long id, BigDecimal bigDecimal, User sender1, User sender2) {
+        this.id = id;
+        this.amount = bigDecimal;
+        this.sender = sender1;
+        this.receiver = sender2;
+    }
 
     @PrePersist
     protected void onCreate() {

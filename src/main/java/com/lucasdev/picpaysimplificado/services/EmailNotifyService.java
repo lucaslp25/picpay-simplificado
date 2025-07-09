@@ -21,21 +21,27 @@ public class EmailNotifyService {
         dto.setEmail(email);
         dto.setMessage(message);
 
-        webClient.post()
-                .uri("/notify")
-                .bodyValue(dto)
-                .retrieve()         //denying the status of success
-                .onStatus(status -> !status.is2xxSuccessful(),
-                        clientResponse -> {
+        try {
 
-                    System.out.println("Error at send notification: " + clientResponse.statusCode());
-                    return Mono.error(new BankNotificationException("Error at send notification"));
+            webClient.post()
+                    .uri("/notify")
+                    .bodyValue(dto)
+                    .retrieve()         //denying the status of success
+                    .onStatus(status -> !status.is2xxSuccessful(),
+                            clientResponse -> {
 
-                }).bodyToMono(String.class).subscribe(
-                        response -> System.out.println("Notification sent successfully!"),
+                                System.out.println("Error at send notification: " + clientResponse.statusCode());
+                                return Mono.error(new BankNotificationException("Error at send notification"));
 
-                        err -> System.out.println("Error at send notification: " + err.getMessage())
-                );
+                            }).bodyToMono(String.class).subscribe(
+                            response -> System.out.println("Notification sent successfully!"),
+
+                            err -> System.out.println("Error at send notification: " + err.getMessage())
+                    );
+
+        }catch (BankNotificationException e){
+            System.out.println("Error at send notification: " + e.getMessage());
+        }
     }
 }
 

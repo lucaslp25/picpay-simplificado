@@ -125,4 +125,30 @@ public class GlobalHandlerException {
         return ResponseEntity.status(status).body(err);
     }
 
+    @ExceptionHandler(BankViolationIntegrityException.class)
+    public ResponseEntity<StandardError> integrityViolationBank(BankViolationIntegrityException e, HttpServletRequest request) {
+
+        HttpStatus status = HttpStatus.CONFLICT; //CODE 409
+        String name = "Integrity violation Error";
+        String message = e.getMessage();
+        String path = request.getRequestURI();
+
+        StandardError err = new StandardError(name, message, status, Instant.now(), path);
+
+        return ResponseEntity.status(status).body(err);
+    }
+
+    @ExceptionHandler(BankIntegrityException.class)
+    public ResponseEntity<StandardError> integrityBank(BankIntegrityException e, HttpServletRequest request) {
+
+        HttpStatus status = HttpStatus.CONFLICT; //CODE 409
+        String name = "Integrity Error";
+        String message = e.getMessage();
+        String path = request.getRequestURI();
+
+        StandardError err = new StandardError(name, message, status, Instant.now(), path);
+
+        return ResponseEntity.status(status).body(err);
+    }
+
 }
