@@ -10,5 +10,4 @@ import java.util.Optional;
 public interface UserRepository extends JpaRepository<User, Long> {
 
     Optional<User> findByCpf(String cpf); //method for find by cpf, the JPQL will doing the query automatic
-
 }

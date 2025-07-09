@@ -1,5 +1,6 @@
 package com.lucasdev.picpaysimplificado.model.entities;
 
+import com.lucasdev.picpaysimplificado.model.DTO.UserResponseDTO;
 import com.lucasdev.picpaysimplificado.model.enums.UserType;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
@@ -63,6 +64,6 @@ public class User implements Serializable {
 
     @PrePersist
     protected void onCreate() {
-        this.balance = new BigDecimal(0); //all users will start with balance zero
+        this.balance = new BigDecimal(50); //all users will start with balance zero
     }
 }

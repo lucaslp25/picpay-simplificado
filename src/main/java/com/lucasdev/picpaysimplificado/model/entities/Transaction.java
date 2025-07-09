@@ -1,6 +1,7 @@
 package com.lucasdev.picpaysimplificado.model.entities;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.lucasdev.picpaysimplificado.model.DTO.UserResponseDTO;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
@@ -39,6 +40,7 @@ public class Transaction implements Serializable {
     @ManyToOne
     @JoinColumn(name = "receiver_id")
     private User receiver;
+
 
     @PrePersist
     protected void onCreate() {

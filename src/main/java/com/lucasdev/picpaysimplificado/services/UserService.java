@@ -1,15 +1,18 @@
 package com.lucasdev.picpaysimplificado.services;
 
+import com.lucasdev.picpaysimplificado.exceptions.BankException;
 import com.lucasdev.picpaysimplificado.exceptions.ResourceNotFoundException;
 import com.lucasdev.picpaysimplificado.model.DTO.UserCreateDTO;
 import com.lucasdev.picpaysimplificado.model.DTO.UserResponseDTO;
 import com.lucasdev.picpaysimplificado.model.DTO.UserUpdateDTO;
 import com.lucasdev.picpaysimplificado.model.entities.User;
+import com.lucasdev.picpaysimplificado.model.enums.UserType;
 import com.lucasdev.picpaysimplificado.repositories.UserRepository;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -18,9 +21,30 @@ public class UserService {
 
     private final UserRepository userRepository;
 
+    private final AuthorizationService authorizationService;
+
     //dependency with constructor is better than @Autowired... facilitate the tests
-    public UserService(UserRepository userRepository) {
+    public UserService(UserRepository userRepository, AuthorizationService authorizationService) {
         this.userRepository = userRepository;
+        this.authorizationService = authorizationService;
+    }
+
+    //this logic must stay here, for avoid repetitive code.
+    protected void validateTransaction(User user, BigDecimal amount) {
+
+        if (user.getUserType() == UserType.MERCHANT){
+            throw new BankException("Merchant cannot do transaction, only receive.");
+        }
+
+        if (amount.compareTo(BigDecimal.ZERO) <= 0) {
+            throw new BankException("The amount must be greater than zero");
+        }
+
+        if (amount.compareTo(user.getBalance()) > 0) {
+            throw new BankException("Insufficient balance: The amount must be less than the balance. Current balance: " + user.getBalance());
+        }
+
+        authorizationService.authorization(); //call the external service!
     }
 
     @Transactional(readOnly = true)
@@ -31,6 +55,16 @@ public class UserService {
 
         return new UserResponseDTO(entity);
     }
+
+    @Transactional(readOnly = true) //use this for other service
+    public User findEntityById(Long id){
+
+        User entity = userRepository.findById(id).
+                orElseThrow(() -> new ResourceNotFoundException("Cannot find user with id: " + id));
+
+        return entity;
+    }
+
 
     @Transactional(readOnly = true)
     public UserResponseDTO findByCpf(String cpf){

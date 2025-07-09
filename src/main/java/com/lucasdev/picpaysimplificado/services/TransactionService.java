@@ -1,0 +1,48 @@
+package com.lucasdev.picpaysimplificado.services;
+
+import com.lucasdev.picpaysimplificado.model.DTO.TransactionResponseDTO;
+import com.lucasdev.picpaysimplificado.model.DTO.TransactionTransferDTO;
+import com.lucasdev.picpaysimplificado.model.entities.Transaction;
+import com.lucasdev.picpaysimplificado.model.entities.User;
+import com.lucasdev.picpaysimplificado.repositories.TransactionRepository;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+@Service
+public class TransactionService {
+
+    private final UserService userService; //call the service here is better than call the userRepository
+
+    private final TransactionRepository transactionRepository;
+
+
+    public TransactionService(UserService userService, TransactionRepository transactionRepository) {
+        this.userService = userService;
+        this.transactionRepository = transactionRepository;
+    }
+
+    @Transactional
+    public TransactionResponseDTO transfer(TransactionTransferDTO dtoRef){
+
+        User senderEntity = userService.findEntityById(dtoRef.id_sender());
+
+        User receiverEntity = userService.findEntityById(dtoRef.id_receiver());
+
+        userService.validateTransaction(senderEntity, dtoRef.amount()); // if don´t throw some exception, it´s okay!
+
+        Transaction transaction = new Transaction();
+
+        transaction.setSender(senderEntity);
+        transaction.setReceiver(receiverEntity);
+        transaction.setAmount(dtoRef.amount());
+
+        transaction = transactionRepository.save(transaction);
+
+        //update the balances
+        senderEntity.setBalance(senderEntity.getBalance().subtract(dtoRef.amount()));
+        receiverEntity.setBalance(receiverEntity.getBalance().add(dtoRef.amount()));
+
+        return new TransactionResponseDTO(transaction);
+    }
+
+}
