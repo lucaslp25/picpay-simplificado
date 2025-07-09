@@ -1,5 +1,6 @@
 package com.lucasdev.picpaysimplificado.services;
 
+import com.lucasdev.picpaysimplificado.exceptions.BankBadRequestException;
 import com.lucasdev.picpaysimplificado.model.DTO.TransactionResponseDTO;
 import com.lucasdev.picpaysimplificado.model.DTO.TransactionTransferDTO;
 import com.lucasdev.picpaysimplificado.model.entities.Transaction;
@@ -30,6 +31,10 @@ public class TransactionService {
         User senderEntity = userService.findEntityById(dtoRef.id_sender());
 
         User receiverEntity = userService.findEntityById(dtoRef.id_receiver());
+
+        if (senderEntity.getId() == receiverEntity.getId()){
+            throw new BankBadRequestException("Cannot transfer money to yourself.");
+        }
 
         userService.validateTransaction(senderEntity, dtoRef.amount()); // if don´t throw some exception, it´s okay!
 

@@ -3,6 +3,7 @@ package com.lucasdev.picpaysimplificado.controller;
 import com.lucasdev.picpaysimplificado.model.DTO.TransactionResponseDTO;
 import com.lucasdev.picpaysimplificado.model.DTO.TransactionTransferDTO;
 import com.lucasdev.picpaysimplificado.services.TransactionService;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -23,7 +24,7 @@ public class TransactionController {
     }
 
     @PostMapping
-    public ResponseEntity<TransactionResponseDTO> createTransaction(@RequestBody TransactionTransferDTO dtoRef) {
+    public ResponseEntity<TransactionResponseDTO> createTransaction(@Valid @RequestBody TransactionTransferDTO dtoRef) {
 
         TransactionResponseDTO result = service.transfer(dtoRef);
 

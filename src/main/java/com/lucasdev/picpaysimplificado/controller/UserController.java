@@ -4,6 +4,7 @@ import com.lucasdev.picpaysimplificado.model.DTO.UserCreateDTO;
 import com.lucasdev.picpaysimplificado.model.DTO.UserResponseDTO;
 import com.lucasdev.picpaysimplificado.model.DTO.UserUpdateDTO;
 import com.lucasdev.picpaysimplificado.services.UserService;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -48,7 +49,7 @@ public class UserController {
     }
 
     @PostMapping
-    public ResponseEntity<UserResponseDTO> insert(@RequestBody UserCreateDTO dtoRef){
+    public ResponseEntity<UserResponseDTO> insert(@Valid @RequestBody UserCreateDTO dtoRef){
 
         UserResponseDTO user = userService.insert(dtoRef);
         //way to return the path on requisition
@@ -59,7 +60,7 @@ public class UserController {
 
     //is patch because make only a bit of changes in entity...
     @PatchMapping(value = "/{id}")
-    public ResponseEntity<UserResponseDTO> update(@PathVariable Long id, @RequestBody UserUpdateDTO dtoRef){
+    public ResponseEntity<UserResponseDTO> update(@PathVariable Long id, @Valid @RequestBody UserUpdateDTO dtoRef){
 
         UserResponseDTO user = userService.update(id, dtoRef);
         return ResponseEntity.ok().body(user); //code 200

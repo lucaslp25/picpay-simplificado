@@ -1,5 +1,6 @@
 package com.lucasdev.picpaysimplificado.services;
 
+import com.lucasdev.picpaysimplificado.exceptions.BankBadRequestException;
 import com.lucasdev.picpaysimplificado.exceptions.BankException;
 import com.lucasdev.picpaysimplificado.exceptions.ResourceNotFoundException;
 import com.lucasdev.picpaysimplificado.model.DTO.UserCreateDTO;
@@ -33,15 +34,15 @@ public class UserService {
     protected void validateTransaction(User user, BigDecimal amount) {
 
         if (user.getUserType() == UserType.MERCHANT){
-            throw new BankException("Merchant cannot do transaction, only receive.");
+            throw new BankBadRequestException("Merchant cannot do transaction, only receive.");
         }
 
         if (amount.compareTo(BigDecimal.ZERO) <= 0) {
-            throw new BankException("The amount must be greater than zero");
+            throw new BankBadRequestException("The amount must be greater than zero");
         }
 
         if (amount.compareTo(user.getBalance()) > 0) {
-            throw new BankException("Insufficient balance: The amount must be less than the balance. Current balance: " + user.getBalance());
+            throw new BankBadRequestException("Insufficient balance: The amount must be less than the balance. Current balance: " + user.getBalance());
         }
 
         authorizationService.authorization(); //call the external service!

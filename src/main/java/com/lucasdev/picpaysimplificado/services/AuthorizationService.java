@@ -1,6 +1,7 @@
 package com.lucasdev.picpaysimplificado.services;
 
 import com.lucasdev.picpaysimplificado.exceptions.BankException;
+import com.lucasdev.picpaysimplificado.exceptions.BankUnauthorizedException;
 import com.lucasdev.picpaysimplificado.model.DTO.AuthorizationResponseDTO;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.stereotype.Service;
@@ -26,7 +27,7 @@ public class AuthorizationService {
                     .retrieve()
                     .onStatus(HttpStatusCode::is4xxClientError, clientResponse -> {
 
-                        return Mono.error(new BankException("Unauthorized acess to external service"));
+                        return Mono.error(new BankUnauthorizedException("Unauthorized acess to external service"));
 
                     }).onStatus(HttpStatusCode::is5xxServerError, clientResponse -> {
 
